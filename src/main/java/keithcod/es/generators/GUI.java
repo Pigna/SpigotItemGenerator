@@ -1,15 +1,10 @@
 package keithcod.es.generators;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import com.sun.org.apache.xalan.internal.utils.ConfigurationError;
 import keithcod.es.gui.GUIItem;
 import keithcod.es.gui.GUIWindow;
 import keithcod.es.gui.GUIWindowPaged;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -19,15 +14,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class GUI {
+public class GUI
+{
 
 
 
-    public static void ShowGUI(Player player){
+    public static void ShowGUI(Player player)
+    {
         ShowInitialGUI(player);
     }
 
-    private static void ShowInitialGUI(Player player){
+    private static void ShowInitialGUI(Player player)
+    {
         GUIWindow window = new GUIWindow("Select an Action", 1);
 
         ItemStack createItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (byte)5);
@@ -69,15 +67,14 @@ public class GUI {
             ShowDeleteGUI(player);
         });
 
-        GUIItem filler = new GUIItem(fillerItem, null);
-
+        GUIItem filler = new GUIItem(fillerItem, event -> {});
+        
         window.setItem(0, 0, filler);
         window.setItem(1, 0, create);
-        window.setItem(1, 0, create);
-        window.setItem(2, 0, reuse);
-        window.setItem(3, 0, filler);
-        window.setItem(4, 0, edit);
-        window.setItem(5, 0, filler);
+        window.setItem(2, 0, filler);
+        window.setItem(3, 0, reuse);
+        window.setItem(4, 0, filler);
+        window.setItem(5, 0, edit);
         window.setItem(6, 0, filler);
         window.setItem(7, 0, delete);
         window.setItem(8, 0, filler);
@@ -85,14 +82,15 @@ public class GUI {
         window.show(player);
     }
 
-    public static void ShowDeleteGUI(Player player){
+    public static void ShowDeleteGUI(Player player)
+    {
         GUIWindowPaged window = new GUIWindowPaged("Delete Generator");
 
         Material[] allItems = Material.values();
 
         int i = 0;
         ConfigurationSection generators = Generators.INSTANCE.getConfig().getConfigurationSection("generators");
-        for(String k : generators.getKeys(false)){
+        for (String k : generators.getKeys(false)){
             ConfigurationSection gen = generators.getConfigurationSection(k);
 
             double time = gen.getDouble("time");
@@ -115,6 +113,11 @@ public class GUI {
             final String uuid = k;
 
             GUIItem guiItem = new GUIItem(itemStack, event -> {
+                List<String> uuidLocList = generators.getConfigurationSection(uuid).getStringList("locations");
+                for(String loc : uuidLocList)
+                {
+                    Generators.INSTANCE.getConfig().getConfigurationSection("locations").set(loc, null);
+                }
                 Generators.INSTANCE.getConfig().getConfigurationSection("generators").set(uuid, null);
                 Generators.INSTANCE.saveConfig();
                 window.close();
@@ -130,7 +133,8 @@ public class GUI {
         window.show(player, 0);
     }
 
-    public static void ShowReuseGUI(Player player){
+    public static void ShowReuseGUI(Player player)
+    {
         GUIWindowPaged window = new GUIWindowPaged("Select an item to generate");
 
         Material[] allItems = Material.values();
@@ -138,7 +142,7 @@ public class GUI {
 
         int i = 0;
         ConfigurationSection generators = Generators.INSTANCE.getConfig().getConfigurationSection("generators");
-        for(String k : generators.getKeys(false)){
+        for (String k : generators.getKeys(false)){
             ConfigurationSection gen = generators.getConfigurationSection(k);
 
             double time = gen.getDouble("time");
@@ -148,14 +152,14 @@ public class GUI {
 
             ItemStack itemStack = new ItemStack(block, 1);
             itemStack = setItemName(formatMaterialName(item) + " Generator", itemStack);
-            itemStack = setItemLore(new ArrayList<String>(Arrays.asList(
+            itemStack = setItemLore(new ArrayList<>(Arrays.asList(
                     "Gen: " + k,
                     "Block: " + formatMaterialName(block),
                     "Item: " + formatMaterialName(item),
                     "Time: " + time,
                     "Amount: " + amount
             )), itemStack);
-            itemStack = setItemEnchant(new ArrayList<Enchantment>(Arrays.asList(Enchantment.LUCK)), itemStack);
+            itemStack = setItemEnchant(new ArrayList<>(Arrays.asList(Enchantment.LUCK)), itemStack);
 
             final ItemStack iStack = itemStack;
 
@@ -174,7 +178,8 @@ public class GUI {
         window.show(player, 0);
     }
 
-    public static void ShowEditGUI1(Player player) {
+    public static void ShowEditGUI1(Player player)
+    {
         GUIWindowPaged window = new GUIWindowPaged("Configure the Generator");
 
         Material[] allItems = Material.values();
@@ -182,7 +187,7 @@ public class GUI {
 
         int i = 0;
         ConfigurationSection generators = Generators.INSTANCE.getConfig().getConfigurationSection("generators");
-        for(String k : generators.getKeys(false)){
+        for (String k : generators.getKeys(false)){
             ConfigurationSection gen = generators.getConfigurationSection(k);
 
             double time = gen.getDouble("time");
@@ -192,14 +197,14 @@ public class GUI {
 
             ItemStack itemStack = new ItemStack(block, 1);
             itemStack = setItemName(formatMaterialName(item) + " Generator", itemStack);
-            itemStack = setItemLore(new ArrayList<String>(Arrays.asList(
+            itemStack = setItemLore(new ArrayList<>(Arrays.asList(
                     "Gen: " + k,
                     "Block: " + formatMaterialName(block),
                     "Item: " + formatMaterialName(item),
                     "Time: " + time,
                     "Amount: " + amount
             )), itemStack);
-            itemStack = setItemEnchant(new ArrayList<Enchantment>(Arrays.asList(Enchantment.LUCK)), itemStack);
+            itemStack = setItemEnchant(new ArrayList<>(Arrays.asList(Enchantment.LUCK)), itemStack);
 
             final ItemStack iStack = itemStack;
             final String uuid = k;
@@ -217,7 +222,8 @@ public class GUI {
         window.show(player, 0);
     }
 
-    public static void ShowEditGUI2(Player player, String genUUID) {
+    public static void ShowEditGUI2(Player player, String genUUID)
+    {
         GUIWindow window = new GUIWindow("Configure the generator", 3);
 
         ItemStack subtract = new ItemStack(Material.REDSTONE);
@@ -243,11 +249,18 @@ public class GUI {
 
         ItemStack timeItem = new ItemStack(Material.WATCH, timeCount.intValue());
         timeItem = setItemName("Spawn Time: " + timeCount.floatValue() + "s", timeItem);
-        window.setItem(2, 1, new GUIItem(timeItem, null));
+        GUIItem clockEvent = new GUIItem(timeItem, event -> {
+            player.sendMessage("Item spawn time is " + timeCount.floatValue() + ".");
+        });
+        window.setItem(2, 1, clockEvent);
+        
         ItemStack itemItem = new ItemStack(Material.EXP_BOTTLE, itemCount.intValue());
         itemItem = setItemName("Spawn Items: " + itemCount.floatValue(), itemItem);
-        window.setItem(6, 1, new GUIItem(itemItem, null));
-
+        GUIItem itemEvent = new GUIItem(itemItem, event -> {
+            player.sendMessage("Amount of items that will spawn is " + itemCount.floatValue() + ".");
+        });
+        window.setItem(6, 1, itemEvent);
+        
         GUIItem subtract1 = new GUIItem(subtract, event -> {
             timeCount.addAndGet(-1);
             ItemStack i = new ItemStack(Material.WATCH, timeCount.intValue());
@@ -341,7 +354,8 @@ public class GUI {
         window.show(player);
     }
 
-    public static void ShowCreateGui1(Player player){
+    public static void ShowCreateGui1(Player player)
+    {
         GUIWindowPaged window = new GUIWindowPaged("Select a Generator Block");
 
         Material[] allItems = Material.values();
@@ -359,15 +373,17 @@ public class GUI {
         )); // Materials that don't render as an itemstack
 
         int i = 0;
-        for ( Material val : allItems) {
+        for ( Material val : allItems)
+        {
             // Filter out items and blocks that can't be rendered as an itemstack
-            if(!val.isBlock() || !val.isSolid() || !val.isOccluding() || ignore.contains(val))
+            if (!val.isBlock() || !val.isSolid() || !val.isOccluding() || ignore.contains(val))
                 continue;
 
             final Material mat = val;
 
             ItemStack item  = new ItemStack(val, 1);
-            if(item != null && item.getAmount() != 0){
+            if (item != null && item.getAmount() != 0)
+            {
 
                 GUIItem guiItem = new GUIItem(item, event -> {
                     ShowCreateGui2(player, mat);
@@ -384,14 +400,16 @@ public class GUI {
         window.show(player, 0);
     }
 
-    public static void ShowCreateGui2(Player player, Material block) {
+    public static void ShowCreateGui2(Player player, Material block)
+    {
         GUIWindowPaged window = new GUIWindowPaged("Select an item to generate");
 
         Material[] allItems = Material.values();
 
 
         int i = 0;
-        for ( Material val : allItems) {
+        for ( Material val : allItems)
+        {
             // Filter out items and blocks that can't be rendered as an itemstack
             if(val.isBlock())
                 continue;
@@ -416,7 +434,8 @@ public class GUI {
         window.show(player, 0);
     }
 
-    public static void ShowCreateGui3(Player player, Material block, Material item) {
+    public static void ShowCreateGui3(Player player, Material block, Material item)
+    {
         GUIWindow window = new GUIWindow("Configure the generator", 3);
 
         ItemStack subtract = new ItemStack(Material.REDSTONE);
@@ -440,10 +459,17 @@ public class GUI {
 
         ItemStack timeItem = new ItemStack(Material.WATCH, timeCount.intValue());
         timeItem = setItemName("Spawn Time: " + timeCount.floatValue() + "s", timeItem);
-        window.setItem(2, 1, new GUIItem(timeItem, null));
+        GUIItem clockEvent = new GUIItem(timeItem, event -> {
+            player.sendMessage("Item spawn time is " + timeCount.floatValue() + ".");
+        });
+        window.setItem(2, 1, clockEvent);
+        
         ItemStack itemItem = new ItemStack(Material.EXP_BOTTLE, itemCount.intValue());
         itemItem = setItemName("Spawn Items: " + itemCount.floatValue(), itemItem);
-        window.setItem(6, 1, new GUIItem(itemItem, null));
+        GUIItem itemEvent = new GUIItem(itemItem, event -> {
+            player.sendMessage("Amount of items that will spawn is " + itemCount.floatValue() + ".");
+        });
+        window.setItem(6, 1, itemEvent);
 
         GUIItem subtract1 = new GUIItem(subtract, event -> {
             timeCount.addAndGet(-1);
@@ -533,7 +559,8 @@ public class GUI {
         window.show(player);
     }
 
-    public static void FinishCreate(Player player, Material block, Material item, float time, int amount){
+    public static void FinishCreate(Player player, Material block, Material item, float time, int amount)
+    {
         UUID uuid = UUID.randomUUID();
         ConfigurationSection config = Generators.INSTANCE.getConfig().getConfigurationSection("generators");
         config = config.createSection(uuid.toString());
@@ -559,7 +586,8 @@ public class GUI {
         player.getInventory().addItem(itemStack);
     }
 
-    private static ItemStack setItemName(String name, ItemStack stack){
+    private static ItemStack setItemName(String name, ItemStack stack)
+    {
         ItemMeta itemMeta = stack.getItemMeta();
         itemMeta.setDisplayName(name);
 
@@ -567,7 +595,8 @@ public class GUI {
         return stack;
     }
 
-    private static ItemStack setItemLore(List<String> lore, ItemStack stack){
+    private static ItemStack setItemLore(List<String> lore, ItemStack stack)
+    {
         ItemMeta itemMeta = stack.getItemMeta();
 
         itemMeta.setLore(lore);
@@ -576,10 +605,12 @@ public class GUI {
         return stack;
     }
 
-    private static ItemStack setItemEnchant(List<Enchantment> enchants, ItemStack stack){
+    private static ItemStack setItemEnchant(List<Enchantment> enchants, ItemStack stack)
+    {
         ItemMeta itemMeta = stack.getItemMeta();
 
-        for(Enchantment enchant : enchants){
+        for (Enchantment enchant : enchants)
+        {
             itemMeta.addEnchant(enchant, 1, true);
         }
 
@@ -587,15 +618,18 @@ public class GUI {
         return stack;
     }
 
-    private static String formatMaterialName(Material mat){
+    private static String formatMaterialName(Material mat)
+    {
         return capitalize(mat.toString().toLowerCase().replace("_", " "));
     }
 
-    public static String capitalize(String text){
+    public static String capitalize(String text)
+    {
         String c = (text != null)? text.trim() : "";
         String[] words = c.split(" ");
         String result = "";
-        for(String w : words){
+        for (String w : words)
+        {
             result += (w.length() > 1? w.substring(0, 1).toUpperCase(Locale.US) + w.substring(1, w.length()).toLowerCase(Locale.US) : w) + " ";
         }
         return result.trim();

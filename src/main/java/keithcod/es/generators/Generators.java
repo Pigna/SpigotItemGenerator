@@ -2,7 +2,6 @@ package keithcod.es.generators;
 
 
 import com.google.common.util.concurrent.AtomicDouble;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import keithcod.es.gui.GUIListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -28,17 +27,19 @@ public class Generators extends JavaPlugin {
     public static Economy econ = null;
 
     @Override
-    public void onEnable() {
+    public void onEnable()
+    {
         INSTANCE = this;
 
-        if(!getConfig().isConfigurationSection("generators"))
+        if (!getConfig().isConfigurationSection("generators"))
             getConfig().createSection("generators");
-        if(!getConfig().isConfigurationSection("locations"))
+        if (!getConfig().isConfigurationSection("locations"))
             getConfig().createSection("locations");
 
         saveConfig();
 
-        if(!setupEconomy()){
+        if (!setupEconomy())
+        {
             log.severe(String.format("[%s] - No Vault dependency found! Economy related features will be disabled. ;)", getDescription().getName()));
         }
         getServer().getPluginManager().registerEvents(new Events(), this);
@@ -48,38 +49,46 @@ public class Generators extends JavaPlugin {
 
         // Run every .25s
         BukkitScheduler scheduler = getServer().getScheduler();
-        scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+        scheduler.scheduleSyncRepeatingTask(this, new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
 //                System.out.println("Generator tick... " + t.doubleValue() + "s");
                 ConfigurationSection generators = getConfig().getConfigurationSection("generators");
-                for(String k : generators.getKeys(false)){
+                for (String k : generators.getKeys(false))
+                {
                     ConfigurationSection gen = generators.getConfigurationSection(k);
                     double time = gen.getDouble("time");
                     boolean generate = t.doubleValue() % time == 0;
-                    if(generate) {
+                    if (generate)
+                    {
                         int amount = gen.getInt("amount");
                         Material mat = Material.getMaterial(gen.getString("item"));
-                        if (gen.getStringList("locations") != null) {
-                            for (String pos : gen.getStringList("locations")) {
-                                World world = Bukkit.getServer().getWorld(pos.split(",")[0]);
-                                float x = Integer.parseInt(pos.split(",")[1])+0.5f;
-                                float y = Integer.parseInt(pos.split(",")[2])+1;
-                                float z = Integer.parseInt(pos.split(",")[3])+0.5f;
-
-                                world.dropItem(new Location(world, x, y, z), new ItemStack(mat, amount));
+                        if (gen.getStringList("locations") != null)
+                        {
+                            for (String pos : gen.getStringList("locations"))
+                            {
+                                String[] loc = pos.split(",");
+                                if(loc.length == 4)
+                                {
+                                    World world = Bukkit.getServer().getWorld(loc[0]);
+                                    float x = Integer.parseInt(loc[1])+0.5f;
+                                    float y = Integer.parseInt(loc[2])+1;
+                                    float z = Integer.parseInt(loc[3])+0.5f;
+                                    world.dropItem(new Location(world, x, y, z), new ItemStack(mat, amount));
+                                }
                             }
                         }
                     }
                 }
-
                 t.addAndGet(0.25);
             }
         }, 0L, 5L);
-
     }
 
-    private boolean setupEconomy() {
+    private boolean setupEconomy()
+    {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
@@ -92,22 +101,24 @@ public class Generators extends JavaPlugin {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-        if (!(sender instanceof Player)) {
+    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
+    {
+        if (!(sender instanceof Player))
+        {
             sender.sendMessage("This command can only be run by a player.");
             return true;
         }
-        if (cmd.getName().equalsIgnoreCase("gen")) {
-
+        if (cmd.getName().equalsIgnoreCase("gen"))
+        {
             GUI.ShowGUI((Player) sender);
-
             return true;
         }
         return false;
     }
 
     @Override
-    public void onDisable(){
+    public void onDisable()
+    {
 
     }
 }
