@@ -2,22 +2,23 @@ package keithcod.es.generators;
 
 
 import com.google.common.util.concurrent.AtomicDouble;
+import java.util.ArrayList;
+import java.util.List;
 import keithcod.es.gui.GUIListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.logging.Logger;
+import keithcod.es.commands.GeneratorCmd;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class Generators extends JavaPlugin {
 
@@ -25,19 +26,25 @@ public class Generators extends JavaPlugin {
 
     private static final Logger log = Logger.getLogger("Minecraft");
     public static Economy econ = null;
+    private ConfigurationSection generators;
 
+    //TODO: Permissions
+    //despawn timer
+    //place blocks diffrentblocks (wool colors)
+    //TODO: fix items falling off the block
     @Override
     public void onEnable()
     {
         INSTANCE = this;
+        getCommand("gen").setExecutor(new GeneratorCmd());
 
         if (!getConfig().isConfigurationSection("generators"))
             getConfig().createSection("generators");
         if (!getConfig().isConfigurationSection("locations"))
             getConfig().createSection("locations");
-
         saveConfig();
-
+        generators = getConfig().getConfigurationSection("generators");
+        
         if (!setupEconomy())
         {
             log.severe(String.format("[%s] - No Vault dependency found! Economy related features will be disabled. ;)", getDescription().getName()));
@@ -54,8 +61,7 @@ public class Generators extends JavaPlugin {
             @Override
             public void run()
             {
-//                System.out.println("Generator tick... " + t.doubleValue() + "s");
-                ConfigurationSection generators = getConfig().getConfigurationSection("generators");
+                
                 for (String k : generators.getKeys(false))
                 {
                     ConfigurationSection gen = generators.getConfigurationSection(k);
@@ -65,6 +71,15 @@ public class Generators extends JavaPlugin {
                     {
                         int amount = gen.getInt("amount");
                         Material mat = Material.getMaterial(gen.getString("item"));
+                        ItemStack is = new ItemStack(mat, amount);
+                        
+                        //Adding name and lore to the item
+                        ItemMeta im = is.getItemMeta();
+                        setName(gen, im);
+                        setLore(gen, im);
+                        is.setItemMeta(im);
+                        
+                        //Spawn item on all locations
                         if (gen.getStringList("locations") != null)
                         {
                             for (String pos : gen.getStringList("locations"))
@@ -76,7 +91,7 @@ public class Generators extends JavaPlugin {
                                     float x = Integer.parseInt(loc[1])+0.5f;
                                     float y = Integer.parseInt(loc[2])+1;
                                     float z = Integer.parseInt(loc[3])+0.5f;
-                                    world.dropItem(new Location(world, x, y, z), new ItemStack(mat, amount));
+                                    world.dropItem(new Location(world, x, y, z), is);
                                 }
                             }
                         }
@@ -85,8 +100,15 @@ public class Generators extends JavaPlugin {
                 t.addAndGet(0.25);
             }
         }, 0L, 5L);
+        System.out.print("ItemGenerators is enabled.");
     }
 
+    @Override
+    public void onDisable()
+    {
+        System.out.print("ItemGenerators is disabled.");
+    }
+    
     private boolean setupEconomy()
     {
         if (getServer().getPluginManager().getPlugin("Vault") == null) {
@@ -99,26 +121,25 @@ public class Generators extends JavaPlugin {
         econ = rsp.getProvider();
         return econ != null;
     }
-
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
+    
+    private void setLore(ConfigurationSection gen, ItemMeta im)
     {
-        if (!(sender instanceof Player))
+        if (gen.contains("lore") && gen.getStringList("lore") != null)
         {
-            sender.sendMessage("This command can only be run by a player.");
-            return true;
+            List<String> loreList = new ArrayList<>();
+            for (String lore : gen.getStringList("lore"))
+            {
+                loreList.add(lore.replace('&', '§'));
+            }
+            im.setLore(loreList);
         }
-        if (cmd.getName().equalsIgnoreCase("gen"))
-        {
-            GUI.ShowGUI((Player) sender);
-            return true;
-        }
-        return false;
     }
-
-    @Override
-    public void onDisable()
+    
+    private void setName(ConfigurationSection gen, ItemMeta im)
     {
-
+        if(gen.contains("name"))
+        {
+            im.setDisplayName(gen.getString("name").replace('&', '§'));
+        }
     }
 }
