@@ -17,7 +17,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.logging.Logger;
+import javafx.scene.paint.Color;
 import keithcod.es.commands.GeneratorCmd;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.ItemMeta;
 
 public class Generators extends JavaPlugin {
@@ -27,6 +29,8 @@ public class Generators extends JavaPlugin {
     private static final Logger log = Logger.getLogger("Minecraft");
     public static Economy econ = null;
     private ConfigurationSection generators;
+    //Temp prefix untill put in config
+    private String prefix = Color.LIGHTGRAY + "[" + Color.GOLD + "Gen" + Color.LIGHTGRAY + "] " + Color.CHOCOLATE;
 
     //TODO: Permissions
     //despawn timer
@@ -141,5 +145,15 @@ public class Generators extends JavaPlugin {
         {
             im.setDisplayName(gen.getString("name").replace('&', '§'));
         }
+    }
+    
+    /***
+     * Send a player a message with prefix in colour.
+     * @param player Player to receive the message.
+     * @param message Message to send the player.
+     */
+    public void sendMessage(Player player, String message)
+    {
+        player.sendMessage(prefix + message);
     }
 }

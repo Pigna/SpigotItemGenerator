@@ -16,7 +16,7 @@ permissions:
         description: Gives access to all Generator commands
         default: op
         children:
-            hearthstone.use: true
+            generator.use: true
     generator.use:
         description: Allow to create new Generators
         default: op

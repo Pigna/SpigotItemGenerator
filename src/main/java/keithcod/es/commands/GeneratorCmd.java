@@ -6,6 +6,7 @@
 package keithcod.es.commands;
 
 import keithcod.es.generators.GUI;
+import keithcod.es.generators.Generators;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,6 +28,7 @@ public class GeneratorCmd implements CommandExecutor
         }
         if (!sender.hasPermission("generator.use"))
         {
+            Generators.INSTANCE.sendMessage((Player)sender, "You don't have the permission to use this command.");
             return false;
         }
         GUI.ShowGUI((Player) sender);

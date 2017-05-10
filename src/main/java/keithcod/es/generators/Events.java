@@ -51,7 +51,7 @@ public class Events implements Listener
                 }
                 else
                 {
-                    event.getPlayer().sendMessage("Generator does no longer exist.");
+                    Generators.INSTANCE.sendMessage(event.getPlayer(), "Generator does no longer exist.");
                 }
             }
         }

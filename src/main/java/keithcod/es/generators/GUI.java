@@ -250,14 +250,14 @@ public class GUI
         ItemStack timeItem = new ItemStack(Material.WATCH, timeCount.intValue());
         timeItem = setItemName("Spawn Time: " + timeCount.floatValue() + "s", timeItem);
         GUIItem clockEvent = new GUIItem(timeItem, event -> {
-            player.sendMessage("Item spawn time is " + timeCount.floatValue() + ".");
+            Generators.INSTANCE.sendMessage(player, "Item spawn time is " + timeCount.floatValue() + ".");
         });
         window.setItem(2, 1, clockEvent);
         
         ItemStack itemItem = new ItemStack(Material.EXP_BOTTLE, itemCount.intValue());
         itemItem = setItemName("Spawn Items: " + itemCount.floatValue(), itemItem);
         GUIItem itemEvent = new GUIItem(itemItem, event -> {
-            player.sendMessage("Amount of items that will spawn is " + itemCount.floatValue() + ".");
+            Generators.INSTANCE.sendMessage(player, "Amount of items that will spawn is " + itemCount.floatValue() + ".");
         });
         window.setItem(6, 1, itemEvent);
         
@@ -460,14 +460,14 @@ public class GUI
         ItemStack timeItem = new ItemStack(Material.WATCH, timeCount.intValue());
         timeItem = setItemName("Spawn Time: " + timeCount.floatValue() + "s", timeItem);
         GUIItem clockEvent = new GUIItem(timeItem, event -> {
-            player.sendMessage("Item spawn time is " + timeCount.floatValue() + ".");
+            Generators.INSTANCE.sendMessage(player, "Item spawn time is " + timeCount.floatValue() + ".");
         });
         window.setItem(2, 1, clockEvent);
         
         ItemStack itemItem = new ItemStack(Material.EXP_BOTTLE, itemCount.intValue());
         itemItem = setItemName("Spawn Items: " + itemCount.floatValue(), itemItem);
         GUIItem itemEvent = new GUIItem(itemItem, event -> {
-            player.sendMessage("Amount of items that will spawn is " + itemCount.floatValue() + ".");
+            Generators.INSTANCE.sendMessage(player, "Amount of items that will spawn is " + itemCount.floatValue() + ".");
         });
         window.setItem(6, 1, itemEvent);
 
