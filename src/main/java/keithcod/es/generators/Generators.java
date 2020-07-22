@@ -29,12 +29,11 @@ public class Generators extends JavaPlugin {
     private static final Logger log = Logger.getLogger("Minecraft");
     public static Economy econ = null;
     private ConfigurationSection generators;
-    //Temp prefix untill put in config
+    //TODO: temp prefix untill put in config
     private String prefix = Color.LIGHTGRAY + "[" + Color.GOLD + "Gen" + Color.LIGHTGRAY + "] " + Color.CHOCOLATE;
 
-    //TODO: Permissions
-    //despawn timer
-    //place blocks diffrentblocks (wool colors)
+    //TODO: despawn timer
+    //TODO: place blocks diffrentblocks (wool colors)
     //TODO: fix items falling off the block
     @Override
     public void onEnable()
@@ -48,7 +47,7 @@ public class Generators extends JavaPlugin {
             getConfig().createSection("locations");
         saveConfig();
         generators = getConfig().getConfigurationSection("generators");
-        
+
         if (!setupEconomy())
         {
             log.severe(String.format("[%s] - No Vault dependency found! Economy related features will be disabled. ;)", getDescription().getName()));
@@ -133,7 +132,7 @@ public class Generators extends JavaPlugin {
             List<String> loreList = new ArrayList<>();
             for (String lore : gen.getStringList("lore"))
             {
-                loreList.add(lore.replace('&', '§'));
+                loreList.add(lore.replace('&', 'ï¿½'));
             }
             im.setLore(loreList);
         }
@@ -143,7 +142,7 @@ public class Generators extends JavaPlugin {
     {
         if(gen.contains("name"))
         {
-            im.setDisplayName(gen.getString("name").replace('&', '§'));
+            im.setDisplayName(gen.getString("name").replace('&', 'ï¿½'));
         }
     }
     
