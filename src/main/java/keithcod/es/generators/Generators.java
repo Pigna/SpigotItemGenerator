@@ -32,9 +32,6 @@ public class Generators extends JavaPlugin {
     //TODO: temp prefix untill put in config
     private String prefix = Color.LIGHTGRAY + "[" + Color.GOLD + "Gen" + Color.LIGHTGRAY + "] " + Color.CHOCOLATE;
 
-    //TODO: despawn timer
-    //TODO: place blocks diffrentblocks (wool colors)
-    //TODO: fix items falling off the block
     @Override
     public void onEnable()
     {

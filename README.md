@@ -11,3 +11,7 @@ generator.use  - For use access
 # TODO
  * Add permissions
  * More configuration options (upgrades?)
+ * Change despawn timer of items
+ * Place blocks different blocks (wool colors)
+ * Fix items falling off the block
+ * Economy usage
